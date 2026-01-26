@@ -214,3 +214,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Data
+blast/BlastParser/yeast_vs_Paxillus.blastp
