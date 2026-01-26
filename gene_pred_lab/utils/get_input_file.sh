@@ -1,0 +1,2 @@
+# get the data from the server. replace my credentials with yours
+scp inf-33-2025@bioinf-serv2.cob.lu.se:~/../../home2/resources/binp28/Data/MyFirstAssembly_LargeContigs_out_AllStrains.unpadded.fasta ./prodigal_input/Assembly.fasta

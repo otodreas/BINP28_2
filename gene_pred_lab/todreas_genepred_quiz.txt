@@ -1,0 +1,22 @@
+Q1: NON-STANDARD NUCLEOTIDES
+7
+There are non-standard nucleotides in the genes
+
+Q2: START CODON FREQUENCY TABLE
+2779 ATG
+ 458 GTG
+ 284 TTG
+
+Q3: # OF PREDICTED GENES VS # OF GENES IN REFERENCE GENOME
+3521 genes in prediction
+3767 genes in reference genome
+# of genes is similar between prediction and reference
+
+Q4: # OF GENES ON FORWARD AND REVERSE STRANDS
+1639 genes in forward strand
+1882 genes in reverse strand
+
+Q5: GC CONTENT IN ASSEMBLY VS GENES
+52.07388757514814292200% GC in assembly
+53.09517602086232452700% GC in genes
+GC content is higher in genes than in the full assembly
