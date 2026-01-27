@@ -12,6 +12,23 @@ import sys
 # DEFINE FUNCTIONS
 # ================
 
+class File_Reader_Writer:
+    def __init__():
+        pass
+
+    def write_header(output_file):
+        head = ["#query", "target", "e-value", "identity (%)", "score"]
+        output_file.write("\t".join(head))
+
+    def file_reader(input_file):
+        pass
+
+    def _query_loop():
+        pass
+
+    def _target_loop():
+        pass
+
 
 # PARSE INPUTS
 # ============
@@ -52,9 +69,7 @@ elif os.path.isfile(output):
 open(output, "w")
 f_out = open(output, "a")
 
-# Define header and write it to the output file
-head = ["#query", "target", "e-value", "identity (%)", "score"]
-f_out.write("\t".join(head))
+write_header(f_out)
 
 # Open input file and read lines one by one
 with open(input, "r") as f_in:
@@ -106,6 +121,11 @@ with open(input, "r") as f_in:
 
 # Close output file
 f_out.close()
+
+
+# RUN PROGRAM
+# ===========
+
 
 # Check for empty output file
 with open(output, "r") as f_out_read:
