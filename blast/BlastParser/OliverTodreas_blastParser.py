@@ -1,42 +1,66 @@
 # BLAST Parser
 
+# Import libraries
 import sys
 
+# Get inputs
 inpath = sys.argv[1]
 outpath = sys.argv[2]
 
+# Write and clear output file and open it to append lines
 open(outpath, 'w')
 out = open(outpath, 'a')
 
+# Define header and write it to the output file
 head = ['#query', 'target', 'e-value', 'identity (%)', 'score']
 out.write('\t'.join(head) + '\n')
 
-n = 0
-row = []
-
+# Open input file and read lines one by one
 with open(inpath, 'r') as f:
+    """
+    File read loop
+    Read the entire file
+    """
     for line in f:
+        # Define row as a list with the query in the first position
         if line.startswith('Query= '):
-            q = line.split()[1]
+            row = [line.split()[1]] + [''] * 4
+            """
+            Query loop
+            Enter when query is identified
+            """
             for line in f:
-                row = [q]
-                if line.startswith('>'):
-                    row = [q]
-                    row.append(line.strip()[1:])
-                elif line.startswith('***** No hits found *****'):
+                # If no hits are found, write the mostly empty line to the file
+                if line.startswith('***** No hits found *****'):
+                    out.write('\t'.join(row) + '\n')
+                    # Break into file read loop
                     break
-                
+                # Identify a hit
+                elif line.startswith('>'):
+                    # Extract target sequence
+                    row[1] = (line.strip()[1:])
+                    """
+                    Target loop
+                    Enter when target is identified
+                    """
+                    for line in f:
+                        # Identify line with score and e-value
+                        if 'Score = ' and 'Expect = ' in line:
+                            # Insert e-value without trailing comma into row
+                            row[2] = line.split()[7][:-1]
+                            # Insert score into row
+                            row[4] = line.split()[2]
+                        # Identify line with identity
+                        elif 'Identities = ' in line:
+                            # Insert identity without parenthesis and comma
+                            row[3] = line.split()[3][1:-2]
+                            # Write complete row and break into query loop
+                            out.write('\t'.join(row) + '\n')
+                            # Break into query loop
+                            break
+                # Write query into row list to ensure it isn't missed in the file read loop
                 elif line.startswith('Query= '):
-                    q = line.split()[1]
-                out.write('\t'.join(row) + '\n')
-                    # break
-                    
-                    # for line in f:
-                    #     if line.startswith('Score = '):
-                    #         row.append(line.split()[7])
-                    #         row.append(0)
-                    #         row.append(line.split()[2])
-                    #         next
-                    #         row[3] = line.split()[3]
+                    row = [line.split()[1]] + [''] * 4
 
+# Close output file
 out.close()
