@@ -60,6 +60,10 @@ def parse_arguments():
     if not os.path.isfile(input):
         sys.exit("Input file does not exist.")
 
+    # Check that input is a blastp file
+    elif not input.endswith(".blastp"):
+        sys.exit("Input file must be a .blastp file.")
+
     # Check output file format
     elif not output.endswith(".tsv") and not output.endswith(".txt"):
         sys.exit("Output file must be .tsv or .txt")

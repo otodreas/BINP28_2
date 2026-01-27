@@ -44,7 +44,7 @@
             "program": "${file}",
             "args": [
                 "blast/BlastParser/yeast_vs_Paxillus.blastp",
-                "blast/BlastParser/../asdf/output.tsv"
+                "blast/BlastParser/..asdf/output.tsv"
         ],
             "console": "integratedTerminal"
         },
@@ -54,6 +54,14 @@
             "request": "launch",
             "program": "${file}",
             "args": ["blast/BlastParser/yeast_vs_Paxillus.blastp"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "not_blastp",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["blast/BlastParser/output.tsv"],
             "console": "integratedTerminal"
         }
     ]
