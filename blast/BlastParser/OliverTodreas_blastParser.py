@@ -13,7 +13,7 @@ out = open(outpath, 'a')
 
 # Define header and write it to the output file
 head = ['#query', 'target', 'e-value', 'identity (%)', 'score']
-out.write('\t'.join(head) + '\n')
+out.write('\t'.join(head))
 
 # Open input file and read lines one by one
 with open(inpath, 'r') as f:
@@ -32,7 +32,7 @@ with open(inpath, 'r') as f:
             for line in f:
                 # If no hits are found, write the mostly empty line to the file
                 if line.startswith('***** No hits found *****'):
-                    out.write('\t'.join(row) + '\n')
+                    out.write('\n' + '\t'.join(row))
                     # Break into file read loop
                     break
                 # Identify a hit
@@ -55,12 +55,13 @@ with open(inpath, 'r') as f:
                             # Insert identity without parenthesis and comma
                             row[3] = line.split()[3][1:-2]
                             # Write complete row and break into query loop
-                            out.write('\t'.join(row) + '\n')
+                            out.write('\n' + '\t'.join(row))
                             # Break into query loop
                             break
-                # Write query into row list to ensure it isn't missed in the file read loop
+                # Write query into row list to not miss any queries
                 elif line.startswith('Query= '):
                     row = [line.split()[1]] + [''] * 4
+                    # Stay in query loop since a query has been identified
 
 # Close output file
 out.close()
