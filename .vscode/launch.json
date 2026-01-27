@@ -4,9 +4,19 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
-            "name": "blastParser default",
+            "name": "out",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "blast/BlastParser/yeast_vs_Paxillus.blastp",
+                "blast/BlastParser/output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "no_out",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",

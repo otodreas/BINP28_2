@@ -2,10 +2,41 @@
 
 import sys
 
-path = sys.argv[1]
+inpath = sys.argv[1]
+outpath = sys.argv[2]
 
-align = open(path)
+open(outpath, 'w')
+out = open(outpath, 'a')
 
-align.readline()
+head = ['#query', 'target', 'e-value', 'identity (%)', 'score']
+out.write('\t'.join(head) + '\n')
 
-align.close()
+n = 0
+row = []
+
+with open(inpath, 'r') as f:
+    for line in f:
+        if line.startswith('Query= '):
+            q = line.split()[1]
+            for line in f:
+                row = [q]
+                if line.startswith('>'):
+                    row = [q]
+                    row.append(line.strip()[1:])
+                elif line.startswith('***** No hits found *****'):
+                    break
+                
+                elif line.startswith('Query= '):
+                    q = line.split()[1]
+                out.write('\t'.join(row) + '\n')
+                    # break
+                    
+                    # for line in f:
+                    #     if line.startswith('Score = '):
+                    #         row.append(line.split()[7])
+                    #         row.append(0)
+                    #         row.append(line.split()[2])
+                    #         next
+                    #         row[3] = line.split()[3]
+
+out.close()
