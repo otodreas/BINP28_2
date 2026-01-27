@@ -3,6 +3,9 @@ OliverTodreas_blastParser
 Oliver Todreas
 Lund University 2026
 
+Usage:
+OliverTodreas_blastParser.py input.blastp output.tsv (output optional)
+
 A CLI tool that takes a blastp alignment as input and writes a .tsv summary
 file with information on a query-target pair's e-value, identity %, and score.
 
@@ -16,10 +19,17 @@ It assumes a rigid structure of blastp input file where
     - Identity follows `Identities = _/_ `
 - No other information on the query-target pair follows the above statistics
 
-The script ignores any query-target pairs whose alignments aren't shown in the
-blastp output file. This is becaus any alignment not reported with > notation
-does not have an identity %. They are therefore not considered important enough
-to be written into the output file.
+The script only writes the best alignment for each query-target pair into the
+output file. This means that alternative alignments for query-target pairs are
+skipped once their highest performing alignment is written to the output file,
+and the program continues to the next target or query. This feature relies on
+the assumption that the alignment following the target (identified by `>`) is
+the best performing alignment. It also means that alignments that are only
+listed under the heading `Sequences producing significant alignments` are
+ignored unless their alignments are given later with `>`.
+
+The result is an output file with one alignment between each query-target pair
+where each alignment is easily looked up with a pipeline. See README.md.
 
 The structure of the script is as follows
 - Import libraries
@@ -137,11 +147,13 @@ def blastparse(in_file, out_file):
 
     # Open input file and read lines one by one
     with open(in_file, "r") as f_in:
+
         # Enter file read loop
         for line in f_in:
             # Define row as a list with the query in the first position
             if line.startswith("Query= "):
                 row = [line.split()[1]] + [""] * 4
+
                 # Enter query loop
                 for line in f_in:
                     # If no hits are found, write the mostly empty line to the file
@@ -149,11 +161,11 @@ def blastparse(in_file, out_file):
                         f_out.write("\n" + "\t".join(row))
                         # Break into file read loop
                         break
-
                     # Identify a hit
                     elif line.startswith(">"):
                         # Extract target sequence
                         row[1] = line.strip()[1:]
+
                         # Enter target loop
                         for line in f_in:
                             # Identify line with score and e-value
@@ -171,7 +183,7 @@ def blastparse(in_file, out_file):
                                 # Break into query loop
                                 break
 
-                    # Write query into row list to not miss any queries
+                    # If a query is found while in the query loop, write into row
                     elif line.startswith("Query= "):
                         row = [line.split()[1]] + [""] * 4
                         # Stay in query loop since a query has been identified
