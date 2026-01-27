@@ -5,6 +5,28 @@ Lund University 2026
 
 A CLI tool that takes a blastp alignment as input and writes a .tsv summary
 file with information on a query-target pair's e-value, identity %, and score.
+
+It assumes a rigid structure of blastp input file where
+- The query is always preceeded by `Query= `
+- A missing target is always identified with `***** No hits found *****`
+- The target is always preceeded by `>`
+- The statistics on each query-target pair are presented in the lines following the target
+    - Score follows `Score = `
+    - Expect follows `Score = _ bits (_), Expect = `
+    - Identity follows `Identities = _/_ `
+- No other information on the query-target pair follows the above statistics
+
+The script ignores any query-target pairs whose alignments aren't shown in the
+blastp output file. This is becaus any alignment not reported with > notation
+does not have an identity %. They are therefore not considered important enough
+to be written into the output file.
+
+The structure of the script is as follows
+- Import libraries
+- Define functions
+    - Define main()
+    - Define the functions that main() calls
+- Run main()
 """
 
 
@@ -171,8 +193,8 @@ def check_output_empty(out_file):
             print("WARNING: output file empty")
 
 
-# RUN PROGRAM
-# ===========
+# RUN MAIN
+# ========
 
 if __name__ == "__main__":
     main()
