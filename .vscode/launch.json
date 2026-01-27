@@ -16,6 +16,39 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "real_file_path",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "blast/BlastParser/yeast_vs_Paxillus.blastp",
+                "blast/BlastParser/../output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "bad_in",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "blast/BlastParser/yeast_vs_Paxillus.blastxp",
+                "blast/BlastParser/../output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "bad_out",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "blast/BlastParser/yeast_vs_Paxillus.blastp",
+                "blast/BlastParser/../asdf/output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "no_out",
             "type": "debugpy",
             "request": "launch",

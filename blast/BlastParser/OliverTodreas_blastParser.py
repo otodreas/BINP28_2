@@ -1,67 +1,109 @@
 # BLAST Parser
 
-# Import libraries
+
+# IMPORT LIBRARIES
+# ================
+
+import argparse
+import os
 import sys
 
-# Get inputs
-inpath = sys.argv[1]
-outpath = sys.argv[2]
+
+# PARSE INPUTS
+# ============
+
+# Define argument parser
+parser = argparse.ArgumentParser(
+    prog="blastParser",
+    description="This program takes a blastp output as input and summarizes the data and outputting a .tsv file.",
+    epilog="blastParser, Oliver E. Todreas, Lund University, 2026",
+)
+
+# Define arguments
+parser.add_argument("input")
+parser.add_argument("output")
+
+# Define an argparce.Namespace object
+args = parser.parse_args()
+
+# Get real paths of input and output files
+input = os.path.realpath(args.input)
+output = os.path.realpath(args.output)
+
+# Handle erraneous inputs
+if not os.path.isfile(input):
+    sys.exit("Input file does not exist.")
+elif not output.endswith(".tsv") and not output.endswith(".txt"):
+    sys.exit("Output file must be .tsv or .txt")
+elif not os.path.isdir(os.path.dirname(output)):
+    sys.exit("Output directory does not exist.")
+elif os.path.isfile(output):
+    print(f"Output file\n{output}\nwas overwritten.")
+
+
+# WRITE OUTPUT FILE
+# =================
 
 # Write and clear output file and open it to append lines
-open(outpath, 'w')
-out = open(outpath, 'a')
+open(output, "w")
+f_out = open(output, "a")
 
 # Define header and write it to the output file
-head = ['#query', 'target', 'e-value', 'identity (%)', 'score']
-out.write('\t'.join(head))
+head = ["#query", "target", "e-value", "identity (%)", "score"]
+f_out.write("\t".join(head))
 
 # Open input file and read lines one by one
-with open(inpath, 'r') as f:
-    """
-    File read loop
-    Read the entire file
-    """
-    for line in f:
+with open(input, "r") as f_in:
+    for line in f_in:
+        """
+        File read loop
+        Read the entire file
+        """
         # Define row as a list with the query in the first position
-        if line.startswith('Query= '):
-            row = [line.split()[1]] + [''] * 4
-            """
-            Query loop
-            Enter when query is identified
-            """
-            for line in f:
+        if line.startswith("Query= "):
+            row = [line.split()[1]] + [""] * 4
+            for line in f_in:
+                """
+                Query loop
+                Enter when query is identified
+                """
                 # If no hits are found, write the mostly empty line to the file
-                if line.startswith('***** No hits found *****'):
-                    out.write('\n' + '\t'.join(row))
+                if line.startswith("***** No hits found *****"):
+                    f_out.write("\n" + "\t".join(row))
                     # Break into file read loop
                     break
                 # Identify a hit
-                elif line.startswith('>'):
+                elif line.startswith(">"):
                     # Extract target sequence
-                    row[1] = (line.strip()[1:])
-                    """
-                    Target loop
-                    Enter when target is identified
-                    """
-                    for line in f:
+                    row[1] = line.strip()[1:]
+                    for line in f_in:
+                        """
+                        Target loop
+                        Enter when target is identified
+                        """
                         # Identify line with score and e-value
-                        if 'Score = ' and 'Expect = ' in line:
+                        if "Score = " and "Expect = " in line:
                             # Insert e-value without trailing comma into row
                             row[2] = line.split()[7][:-1]
                             # Insert score into row
                             row[4] = line.split()[2]
                         # Identify line with identity
-                        elif 'Identities = ' in line:
+                        elif "Identities = " in line:
                             # Insert identity without parenthesis and comma
                             row[3] = line.split()[3][1:-2]
                             # Write complete row and break into query loop
-                            out.write('\n' + '\t'.join(row))
+                            f_out.write("\n" + "\t".join(row))
                             # Break into query loop
                             break
                 # Write query into row list to not miss any queries
-                elif line.startswith('Query= '):
-                    row = [line.split()[1]] + [''] * 4
+                elif line.startswith("Query= "):
+                    row = [line.split()[1]] + [""] * 4
                     # Stay in query loop since a query has been identified
 
 # Close output file
-out.close()
+f_out.close()
+
+# Check for empty output file
+with open(output, "r") as f_out_read:
+    if not f_out_read.readline():
+        print("WARNING: output file empty")
