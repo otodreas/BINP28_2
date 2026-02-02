@@ -169,7 +169,7 @@ def blastparse(in_file, out_file):
                         # Enter target loop
                         for line in f_in:
                             # Identify line with score and e-value
-                            if "Score = " in line and "Expect = " in line:  # submitted with bug here (still worked because the fist non-empty line after > was always the score & evalue line)
+                            if "Score = " in line and "Expect = " in line:
                                 # Insert e-value without trailing comma into row
                                 row[2] = line.split()[7][:-1]
                                 # Insert score into row

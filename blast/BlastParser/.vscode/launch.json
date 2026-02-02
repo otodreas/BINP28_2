@@ -1,0 +1,68 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "out",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "yeast_vs_Paxillus.blastp",
+                "output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "real_file_path",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "yeast_vs_Paxillus.blastp",
+                "../output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "bad_in",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "yeast_vs_Paxillus.blastxp",
+                "../output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "bad_out",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "yeast_vs_Paxillus.blastp",
+                "..asdf/output.tsv"
+        ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "no_out",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["yeast_vs_Paxillus.blastp"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "not_blastp",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["output.tsv"],
+            "console": "integratedTerminal"
+        }
+    ]
+}
