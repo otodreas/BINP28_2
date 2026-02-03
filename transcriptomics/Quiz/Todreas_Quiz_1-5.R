@@ -1,31 +1,33 @@
 # TRANSCRIPTOMICS QUIZ ANSWERS
-# LATEST, UPDATED VERSION
+# LATEST UPDATED VERSION
 # DISREGARD EARLIER SUBMISSIONS
 
-#################################### SETUP ####################################
 
-# # Install packages
-# if (!requireNamespace("BiocManager", quietly = TRUE)) {
-#   install.packages("BiocManager")
-# }
+# SETUP ####
 
-# BiocManager::install("DESeq2")
-# install.packages("gplots")
-# install.packages("pheatmap")
-# install.packages("RColorBrewer")
-# install.packages("tidyverse")
-# install.packages("here")
+# Install packages
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 
-# # Mount packages
-# library(DESeq2)
-# library(gplots)
-# library(pheatmap)
-# library(RColorBrewer)
-# library(tidyverse)
-# library(here)
+BiocManager::install("DESeq2")
+install.packages("gplots")
+install.packages("pheatmap")
+install.packages("RColorBrewer")
+install.packages("tidyverse")
+install.packages("here")
+
+# Mount packages
+library(DESeq2)
+library(gplots)
+library(pheatmap)
+library(RColorBrewer)
+library(tidyverse)
+library(here)
 
 # Clear variables
 rm(list = ls())
+
 
 # Load count matrix
 countMatrix <- as.matrix(
@@ -55,18 +57,46 @@ dds <- DESeqDataSetFromMatrix(
   countData = countMatrix, colData = sampleTable, design = ~ condition
 )
 
-################################## QUESTION 1 #################################
-
 # Estimate size factors
 dds <- estimateSizeFactors(dds)
 
-# Instantiate dataframe with normalized counts
-normalized_counts <- as.data.frame(counts(dds, normalized = TRUE))
+
+# QUESTIONS 1-2 ####
 
 # Transform data with regularized log transformation
 rld <- rlog(dds, blind = TRUE)
 
-# PCA
+# Generate PCA plot of the 1000 most variable genes
 pdf(here("transcriptomics", "Quiz", "Todreas_pca.pdf"))
-DESeq2::plotPCA(rld, intgroup = c("condition"), ntop = 500)
+DESeq2::plotPCA(rld, intgroup = c("condition"), ntop = 1000)
 dev.off()
+
+
+# QUESTION 3 ####
+
+# Run DESeq on dds object
+dds <- DESeq(dds)
+
+# Specify levels
+contrast_pr <- c("condition", "Urtica", "Ribes")
+
+# Extract results of the contrast Urtica vs. Ribes
+res_table <- results(dds, contrast = contrast_pr)
+
+# Sort results by adjusted p-value
+res_table <- res_table[order(res_table$padj),]
+
+# Get the most differentially expressed gene
+rownames(res_table)[1]
+
+
+# QUESTION 4 ####
+
+# Get the fold change of the most DE gene in Ribes relative to Urtica
+signif(2^(abs(res_table$log2FoldChange[1])), 3)
+
+
+# QUESTION 5 ####
+
+# Determine how many DE genes pass the significance and fold change filter
+nrow(subset(res_table , padj < 0.01 & abs(log2FoldChange) > 1))
