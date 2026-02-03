@@ -26,7 +26,11 @@ library(here)
 # Load data (update path to data based on your working directory setup)
 count_mat <- as.matrix(
   read.csv(
-    here("transcriptomics", "final.matrix.txt"), sep = "\t", row.names = "gene_id"
+    here(
+      "ServerData", "transcriptomics_lab", "04_Counting", "final.matrix.txt"
+    ),
+    sep = "\t",
+    row.names = "gene_id"
   )
 )
 
