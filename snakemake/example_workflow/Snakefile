@@ -1,0 +1,19 @@
+rule all:
+    input:
+        's1.2'
+
+rule first:
+    input:
+        's1.0'
+    output:
+        's1.1'
+    shell:
+        'touch {output} '
+
+rule second:
+    input:
+        's1.1'
+    output:
+        's1.2'
+    shell:
+        'touch {output} '

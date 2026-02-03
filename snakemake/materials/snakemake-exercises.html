@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Nikos Tsardakas Renhuldt" />
+  <title>Reproducibility and Snakemake</title>
+  <style>
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+svg {
+height: auto;
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } 
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.at { color: #204a87; } 
+code span.bn { color: #0000cf; } 
+code span.cf { color: #204a87; font-weight: bold; } 
+code span.ch { color: #4e9a06; } 
+code span.cn { color: #8f5902; } 
+code span.co { color: #8f5902; font-style: italic; } 
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.dt { color: #204a87; } 
+code span.dv { color: #0000cf; } 
+code span.er { color: #a40000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #0000cf; } 
+code span.fu { color: #204a87; font-weight: bold; } 
+code span.im { } 
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } 
+code span.kw { color: #204a87; font-weight: bold; } 
+code span.op { color: #ce5c00; font-weight: bold; } 
+code span.ot { color: #8f5902; } 
+code span.pp { color: #8f5902; font-style: italic; } 
+code span.sc { color: #ce5c00; font-weight: bold; } 
+code span.ss { color: #4e9a06; } 
+code span.st { color: #4e9a06; } 
+code span.va { color: #000000; } 
+code span.vs { color: #4e9a06; } 
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } 
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Reproducibility and <code>Snakemake</code></h1>
+<p class="author">Nikos Tsardakas Renhuldt</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#reproducibility" id="toc-reproducibility"><span class="toc-section-number">1</span> Reproducibility</a>
+<ul>
+<li><a href="#an-overview-of-the-variant-calling-pipeline" id="toc-an-overview-of-the-variant-calling-pipeline"><span class="toc-section-number">1.1</span> An overview of the variant calling
+pipeline</a></li>
+</ul></li>
+<li><a href="#snakemake" id="toc-snakemake"><span class="toc-section-number">2</span> Snakemake</a>
+<ul>
+<li><a href="#documentation-etc" id="toc-documentation-etc"><span class="toc-section-number">2.1</span> Documentation etc</a></li>
+<li><a href="#installation" id="toc-installation"><span class="toc-section-number">2.2</span> Installation</a></li>
+<li><a href="#snakemake-overview" id="toc-snakemake-overview"><span class="toc-section-number">2.3</span> <code>Snakemake</code>
+overview</a></li>
+<li><a href="#snakemake-rules" id="toc-snakemake-rules"><span class="toc-section-number">2.4</span> <code>Snakemake</code>
+rules</a></li>
+<li><a href="#snakemake-target-files" id="toc-snakemake-target-files"><span class="toc-section-number">2.5</span> <code>Snakemake</code> target
+files</a></li>
+<li><a href="#an-example-workflow" id="toc-an-example-workflow"><span class="toc-section-number">2.6</span> An example workflow</a></li>
+<li><a href="#example-exercises" id="toc-example-exercises"><span class="toc-section-number">2.7</span> Example exercises</a></li>
+<li><a href="#structuring-snakemake-projects" id="toc-structuring-snakemake-projects"><span class="toc-section-number">2.8</span> Structuring <code>Snakemake</code>
+projects</a></li>
+<li><a href="#a-full-snakemake-pipeline" id="toc-a-full-snakemake-pipeline"><span class="toc-section-number">2.9</span> A full <code>Snakemake</code>
+pipeline</a></li>
+<li><a href="#exercises" id="toc-exercises"><span class="toc-section-number">2.10</span> Exercises</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 data-number="1" id="reproducibility"><span class="header-section-number">1</span> Reproducibility</h1>
+<p>Being able to reliably reproduce results is a key part of science. In
+the context of bioinformatics, a very basic form of reproducibility
+consists in a collection of scripts and data that may be used together
+to recreate the results. Since different versions of the same software
+behave differently, software versions must also be documented in order
+for us to reliably reproduce results. Generally, these scripts are
+accompanied by a <code>README</code> or similar document, outlining what
+various scripts do, dependencies, how to run them, and so on. Ideally,
+these steps are also possible to reuse for similar types of data, for
+you as well as others facing similar scientific questions. There are
+many ways of ensuring these things, but in the past few years
+<code>Snakemake</code> has offered a way to do several of these things,
+and then some. Going forward you must learn how to keep your analyses
+reproducible. Reproducibility is absolutely necessary for scientific
+work.</p>
+<p><code>Snakemake</code> (<a href="https://snakemake.readthedocs.io" class="uri">https://snakemake.readthedocs.io</a>) is a workflow
+management system. It allows us to build workflows that are reproducible
+as well as useful for new datasets. It also allows us to integrate
+package management – the handling of different software versions and
+dependencies – into the workflow, while also providing a way to
+parallelize execution of independent parts of the workflow, even
+allowing us to resume runs that have been interrupted. This exercise
+will walk you through how to set up a <code>Snakemake</code> workflow
+for the variant calling exercise you did yesterday.</p>
+<h2 data-number="1.1" id="an-overview-of-the-variant-calling-pipeline"><span class="header-section-number">1.1</span> An overview of the variant
+calling pipeline</h2>
+<p>During yesterday’s exercise, you performed the following steps to
+call variants.</p>
+<div class="sourceCode" id="cb1" data-language="bash"><pre class="sourceCode numberSource bash numberLines"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># build an index for bowtie2</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="ex">bowtie2-build</span> yeastGenome.fa yeastGenome</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># map reads using bowtie2</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="ex">bowtie2</span> <span class="at">-x</span> yeastGenome <span class="at">-U</span> yeastReads.fastq <span class="at">-S</span> readsAligned.sam</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># sort the file and convert to bam</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="ex">samtools</span> sort <span class="at">-o</span> readsAligned.sortedPositions.bam readsAligned.sam</span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="co"># index the sorted bam file</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="ex">samtools</span> index readsAligned.sortedPositions.bam </span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="co"># pileup variants</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="ex">bcftools</span> mpileup <span class="at">-Ob</span> <span class="at">-f</span> yeastGenome.fa <span class="dt">\</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>    readsAligned.sortedPositions.bam <span class="dt">\</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>    <span class="op">&gt;</span> variants.bcf</span>
+<span id="cb1-17"><a href="#cb1-17"></a></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="co"># call variants</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="ex">bcftools</span> call <span class="at">-m</span> <span class="at">-v</span> variants.bcf <span class="op">&gt;</span> variants.vcf</span></code></pre></div>
+<p>Beyond this, you also spent some time installing the correct versions
+of different softwares, etc. For basic reproducibility, you could
+essentially just provide a file containing the above script, together
+with the necessary data files and software versions, and somebody could
+rerun this and get the same results you did. However, if you wanted to
+align this against a different genome, or align different read sets to
+the same genome, you would need to edit the script file manually, both
+to avoid rerunning the indexing, but also to update the file names in
+each of the steps. <code>Snakemake</code> helps us with this as
+well.</p>
+<h1 data-number="2" id="snakemake"><span class="header-section-number">2</span> Snakemake</h1>
+<h2 data-number="2.1" id="documentation-etc"><span class="header-section-number">2.1</span> Documentation etc</h2>
+<p>The official <code>Snakemake</code> documentation can be found here:
+<a href="https://snakemake.readthedocs.io/en/stable/" class="uri">https://snakemake.readthedocs.io/en/stable/</a></p>
+<p>There is an excellent <code>Snakemake</code> tutorial available here:
+<a href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html" class="uri">https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html</a>.</p>
+<p>Feel free to also have a look at these slides: <a href="https://slides.com/johanneskoester/snakemake-tutorial" class="uri">https://slides.com/johanneskoester/snakemake-tutorial</a>.</p>
+<p>A list of best-practice examples are available here: <a href="https://github.com/snakemake-workflows/docs" class="uri">https://github.com/snakemake-workflows/docs</a>.</p>
+<p>An additonal presentation by Jakob Willforss is availabe here: <a href="https://www.jakobwillforss.com/post/snakemake-a-friendly-introduction/" class="uri">https://www.jakobwillforss.com/post/snakemake-a-friendly-introduction/</a>.</p>
+<p>The <code>Snakemake</code> wrappers repository contains plug-and-play
+<code>Snakemake</code> rules for lots of bioinformatics software: <a href="https://snakemake-wrappers.readthedocs.io" class="uri">https://snakemake-wrappers.readthedocs.io</a>.</p>
+<p>As always, searching the web for “snakemake” together with whatever
+errors or questions you may have is an excellent start to
+troubleshooting.</p>
+<h2 data-number="2.2" id="installation"><span class="header-section-number">2.2</span> Installation</h2>
+<p>Install and activate <code>Snakemake</code> by running</p>
+<div class="sourceCode" id="cb2" data-language="bash"><pre class="sourceCode numberSource bash numberLines"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">conda</span> create <span class="at">-n</span> snakemake <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda snakemake</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">conda</span> activate snakemake</span></code></pre></div>
+<h2 data-number="2.3" id="snakemake-overview"><span class="header-section-number">2.3</span> <code>Snakemake</code>
+overview</h2>
+<p>A <code>Snakemake</code> workflow consists of a set of
+<em>rules</em>, each defining a set of <em>inputs</em> and
+<em>outputs</em>, as well as the commands necessary to produce outputs
+from the provided input files. Provided a set of input files and a set
+of target files, <code>Snakemake</code> builds a graph of which rules to
+execute for which inputs and in which order to do so. The bulk of the
+workflow that we will write in this exercise will consist of rules.</p>
+<h2 data-number="2.4" id="snakemake-rules"><span class="header-section-number">2.4</span> <code>Snakemake</code>
+rules</h2>
+<p>A rule may look like this:</p>
+<div class="sourceCode" id="cb3" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb3-1"><a href="#cb3-1"></a>rule sam_to_bam: # sam_to_bam is the rule name</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    input:</span>
+<span id="cb3-3"><a href="#cb3-3"></a>        sam = &quot;readsAligned.sam&quot;</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    output:</span>
+<span id="cb3-5"><a href="#cb3-5"></a>        bam = &quot;readsAligned.sortedPositions.bam&quot;</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    shell:</span>
+<span id="cb3-7"><a href="#cb3-7"></a>        &quot;samtools sort &quot;</span>
+<span id="cb3-8"><a href="#cb3-8"></a>        &quot;-o {output.bam} &quot;</span>
+<span id="cb3-9"><a href="#cb3-9"></a>        &quot;{input} &quot;</span></code></pre></div>
+<p>The <em>shell</em> command specifies what should be done to generate
+the inputs from the outputs. <code>Snakemake</code> is based on
+<code>python</code>, and lots of things in <code>Snakemake</code> can be
+done using <code>python</code> code. By using <em>run</em> instead of
+shell, we can run <code>python</code> code in the rule directly.</p>
+<p>Note also how the input and output files are referenced within the
+curly brackets. A rule may also be generalized further by introducing
+<em>wildcards</em> into the names of input and output files.</p>
+<div class="sourceCode" id="cb4" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1"></a>rule sam_to_bam: </span>
+<span id="cb4-2"><a href="#cb4-2"></a>    input:</span>
+<span id="cb4-3"><a href="#cb4-3"></a>        sam = &quot;{sample}.sam&quot;</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    output:</span>
+<span id="cb4-5"><a href="#cb4-5"></a>        bam = &quot;{sample}.sortedPositions.bam&quot;</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    shell:</span>
+<span id="cb4-7"><a href="#cb4-7"></a>        &quot;samtools sort &quot;</span>
+<span id="cb4-8"><a href="#cb4-8"></a>        &quot;-o {output.bam} &quot;</span>
+<span id="cb4-9"><a href="#cb4-9"></a>        &quot;{input} &quot;</span></code></pre></div>
+<p>The wildcards, specified within curly brackets of the input and
+output, allows the rule to be applied to any file matching the provided
+pattern. This means that the rule above could be used to turn any file
+ending in <code>.sam</code> into a sorted <code>BAM</code> file. The
+file name would be identical to the input file name, but replacing the
+<code>.sam</code> file ending with a <code>.sortedPositions.bam</code>
+file ending. Sensibly re-using wildcards across rules makes the flow of
+the <code>Snakefile</code> easier to understand. A rule to index the
+sorted <code>BAM</code> file could look as follows:</p>
+<div class="sourceCode" id="cb5" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>rule index_bam: </span>
+<span id="cb5-2"><a href="#cb5-2"></a>    input:</span>
+<span id="cb5-3"><a href="#cb5-3"></a>        bam = &quot;{sample}.sortedPositions.bam&quot;</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    output:</span>
+<span id="cb5-5"><a href="#cb5-5"></a>        index = &quot;{sample}.sortedPositions.bam.bai&quot;</span>
+<span id="cb5-6"><a href="#cb5-6"></a>    shell:</span>
+<span id="cb5-7"><a href="#cb5-7"></a>        &quot;samtools index {input} &quot;</span></code></pre></div>
+<p>The reader of the <code>Snakefile</code> will understand that the
+sample wildcard will take similar values across the rules.</p>
+<h2 data-number="2.5" id="snakemake-target-files"><span class="header-section-number">2.5</span> <code>Snakemake</code> target
+files</h2>
+<p>Target files may be specified in several ways. When running
+<code>snakemake</code> the default behavior is for
+<code>Snakemake</code> to attempt creating the inputs for the first rule
+of the <code>Snakefile</code>, unless a target is specified explicitly.
+By convention, the first rule of the <code>Snakefile</code> is named
+<code>all</code>, and is specified as</p>
+<div class="sourceCode" id="cb6" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb6-1"><a href="#cb6-1"></a>rule all:</span>
+<span id="cb6-2"><a href="#cb6-2"></a>    input:</span>
+<span id="cb6-3"><a href="#cb6-3"></a>        &#39;variants.vcf&#39;</span></code></pre></div>
+<p>for the most basic case, in which we hardcode the single target file.
+Note that <code>rule all</code> should specify one or a list of files to
+be generated, as opposed to a wildcard, as a wildcard on its own only
+provides a file name pattern. If we are dealing with multiple samples,
+we may want to use the <code>expand</code> function here. The
+<code>expand</code> function takes a <code>python</code> string and
+performs substitutions using the <code>python</code> formatting
+mini-language: <a href="https://docs.python.org/3/library/string.html#formatspec" class="uri">https://docs.python.org/3/library/string.html#formatspec</a>.
+The <code>expand</code> function returns a list of strings. The
+resulting <code>all</code> rule may look like this:</p>
+<div class="sourceCode" id="cb7" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb7-1"><a href="#cb7-1"></a>SAMPLE = [&#39;sample_1&#39;, &#39;sample_2&#39;]</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a>rule all:</span>
+<span id="cb7-4"><a href="#cb7-4"></a>    input:</span>
+<span id="cb7-5"><a href="#cb7-5"></a>        expand(&#39;{sample}.vcf&#39;, sample=SAMPLE)</span></code></pre></div>
+<p><code>Snakemake</code> would try to generate the files
+<code>sample_1.vcf</code> and <code>sample_2.vcf</code>, as these are
+the strings in the list returned by <code>expand</code>. It is worth
+noting here that the text in the curly brackets in the first argument to
+<code>expand</code> is not a <code>Snakemake</code> wildcard, but simply
+a placeholder that gets replaced by whatever is provided as other named
+arguments to <code>expand</code>, in this case <code>SAMPLE</code>.
+Again, note that in both of the examples above, the input to
+<code>rule all</code> is one or several names of actual files that are
+to be generated by the workflow.</p>
+<p>The <code>SAMPLE</code> variable here can be created using any valid
+<code>python</code> code. One common and recommended way of doing this
+is providing a config <code>tsv</code> file containing sample names and,
+when needed, connecting those to relevant input files. The code to do
+this may look as follows:</p>
+<div class="sourceCode" id="cb8" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb8-1"><a href="#cb8-1"></a>configfile: &#39;config/config.yaml&#39;</span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a>sample_df = (pd.read_csv(config[&#39;samples&#39;],</span>
+<span id="cb8-5"><a href="#cb8-5"></a>        sep=&#39;\t&#39;,</span>
+<span id="cb8-6"><a href="#cb8-6"></a>        dtype={&#39;sample_name&#39;:str, &#39;fastq&#39;:str})</span>
+<span id="cb8-7"><a href="#cb8-7"></a>    .set_index(&#39;sample_name&#39;, drop=False))</span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>rule all:</span>
+<span id="cb8-11"><a href="#cb8-11"></a>    input:</span>
+<span id="cb8-12"><a href="#cb8-12"></a>        expand(&#39;{sample}.vcf&#39;, sample=sample_df.sample_name)</span></code></pre></div>
+<p>In the above code, we start by declaring that we have a config file
+located at <code>config/config.yaml</code>. In the config file we are
+able to store all options the we may want to change for different runs
+of the workflow. This includes e.g. locations of reference genomes,
+locations of additional config files, parameters for various steps of
+the workflow, and so on. In this case we use it to provide the location
+of the <code>tsv</code> file containing sample information. The config
+file may look like</p>
+<div class="sourceCode" id="cb9" data-language="yaml"><pre class="sourceCode numberSource yaml numberLines"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">samples</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;config/samples.tsv&#39;</span></span></code></pre></div>
+<p>and the <code>samples</code> property may be accessed using
+<code>config[&#39;samples&#39;]</code> within the <code>Snakefile</code>. We
+access this file and parse it using the <code>pandas.read_csv</code>
+function, saving the resulting dataframe to the <code>sample_df</code>
+variable. Based on the code for reading the <code>tsv</code> file, we
+see that it must be tab separated (<code>sep=&#39;\t&#39;</code>), and have the
+columns <code>sample_name</code> and <code>fastq</code>, each of which
+contains string data. An examples <code>tsv</code> could look as
+follows:</p>
+<div class="sourceCode" id="cb10" data-language="tsv"><pre class="sourceCode numberSource tsv numberLines"><code class="sourceCode"><span id="cb10-1"><a href="#cb10-1"></a>sample_name fastq</span>
+<span id="cb10-2"><a href="#cb10-2"></a>sample_1    resources/s1.fq</span>
+<span id="cb10-3"><a href="#cb10-3"></a>...</span></code></pre></div>
+<p>The <code>expand</code> function reads the <code>sample_name</code>
+column of this dataframe, and creates the list of target files. Running
+the workflow for additional datasets would simply mean adding rows with
+sample names and <code>fastq</code> file locations to the
+<code>tsv</code> file for each additional sample we want to run.</p>
+<p>An alternative to specifying the samples in a <code>tsv</code> file
+is using the <code>glob_wildcards</code> function to identify wildcards
+based on file names. This looks as follows:</p>
+<div class="sourceCode" id="cb11" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb11-1"><a href="#cb11-1"></a>SAMPLE, = glob_wildcards(&#39;{sample}.fastq&#39;)</span>
+<span id="cb11-2"><a href="#cb11-2"></a></span>
+<span id="cb11-3"><a href="#cb11-3"></a>rule all:</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    input:</span>
+<span id="cb11-5"><a href="#cb11-5"></a>        expand(&#39;{sample}.vcf&#39;, sample=SAMPLE)</span></code></pre></div>
+<p>This extracts the first part of all <code>fastq</code> file names and
+saves them to the <code>SAMPLE</code> variable as a list, which we may
+then use with the <code>expand</code> function. For workflows without
+messy input data, this may be an option.</p>
+<p>The <code>expand</code> function may also be used in other rules.
+Whenever you need to aggregate the output of several different samples,
+<code>expand</code> may be very useful.</p>
+<h2 data-number="2.6" id="an-example-workflow"><span class="header-section-number">2.6</span> An example workflow</h2>
+<p>Let’s set up a basic workflow. Put the following code in a file named
+<code>Snakefile</code> in a new directory named
+<code>example_workflow</code>.</p>
+<div class="sourceCode" id="cb12" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb12-1"><a href="#cb12-1"></a>rule all:</span>
+<span id="cb12-2"><a href="#cb12-2"></a>    input:</span>
+<span id="cb12-3"><a href="#cb12-3"></a>        &#39;s1.2&#39;</span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a>rule first:</span>
+<span id="cb12-6"><a href="#cb12-6"></a>    input:</span>
+<span id="cb12-7"><a href="#cb12-7"></a>        &#39;s1.0&#39;</span>
+<span id="cb12-8"><a href="#cb12-8"></a>    output:</span>
+<span id="cb12-9"><a href="#cb12-9"></a>        &#39;s1.1&#39;</span>
+<span id="cb12-10"><a href="#cb12-10"></a>    shell:</span>
+<span id="cb12-11"><a href="#cb12-11"></a>        &#39;touch {output} &#39;</span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a>rule second:</span>
+<span id="cb12-14"><a href="#cb12-14"></a>    input:</span>
+<span id="cb12-15"><a href="#cb12-15"></a>        &#39;s1.1&#39;</span>
+<span id="cb12-16"><a href="#cb12-16"></a>    output:</span>
+<span id="cb12-17"><a href="#cb12-17"></a>        &#39;s1.2&#39;</span>
+<span id="cb12-18"><a href="#cb12-18"></a>    shell:</span>
+<span id="cb12-19"><a href="#cb12-19"></a>        &#39;touch {output} &#39;</span></code></pre></div>
+<h2 data-number="2.7" id="example-exercises"><span class="header-section-number">2.7</span> Example exercises</h2>
+<ol class="example" type="1">
+<li>Try running the above code. Do so by running <code>snakemake</code>
+in the <code>example_workflow</code> directory. What error do you get?
+Once you fix the first error, what does the second one mean?</li>
+<li>Add the missing file by <code>touch</code>ing it. What happens if
+you run <code>snakemake -n</code>? Try re-running the workflow. What
+happens?</li>
+<li>Try running the workflow again. What happens? What happens if you
+remove or touch <code>s1.1</code>, and try re-running it?</li>
+<li>Using what you’ve learned above regarding wildcards, update this
+workflow to be able to handle generating any file ending in
+<code>.2</code>, including the intermediate step as in the workflow
+above. Use this updated workflow to generate
+<code>my_first_workflow.2</code> by running <code>snakemake</code>. Also
+use it to generate <code>manual_target.2</code> by running
+<code>snakemake manual_target.2</code>. Remember that you must first
+generate the necessary input files manually.</li>
+<li>Update the above workflow to use <code>glob_wildcards</code> or a
+<code>tsv</code> file to identify which files should be generated.
+Explain what effect calling <code>expand</code> in other rules than
+<code>all</code> has on this workflow. (Comparing dry-run outputs for
+different workflows with multiple targets may be helpful here.)</li>
+</ol>
+<h2 data-number="2.8" id="structuring-snakemake-projects"><span class="header-section-number">2.8</span> Structuring
+<code>Snakemake</code> projects</h2>
+<p>The recommended directory structure of <code>Snakemake</code>
+workflows may be found here: <a href="https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html" class="uri">https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html</a>.
+In the case of this workflow, following a run, the output of
+<code>tree</code> may look like this:</p>
+<p><img role="img" src="data:image/png;base64,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" /></p>
+<p>An explanation of each of these follows:</p>
+<dl>
+<dt><code>README.md</code></dt>
+<dd>
+<p>file containing an overview of the the project, including some
+context, the purpose of doing the analyses, data origins, how to run the
+workflow, the people involved, etc.</p>
+</dd>
+<dt><code>config</code></dt>
+<dd>
+<p>directory containing configurations files, e.g. <code>tsv</code> file
+with sample IDs, or the main config file.</p>
+</dd>
+<dt><code>workflow</code></dt>
+<dd>
+<p>directory containing the main <code>Snakefile</code>, as well as
+additional files necessary to run this. This could include external
+scripts, report caption files, and separate files for rules. The
+<code>env</code> subdirectory contains the <code>yaml</code> files
+specifying the dependencies for the <code>conda</code> environments used
+for the different rules.</p>
+</dd>
+<dt><code>resources</code></dt>
+<dd>
+<p>directory containing resources not directly generated by the
+workflow, kind-of. This would include reference genomes, raw data, etc.
+As genome indices etc are expected to be in the same directory as the
+genome, these are kept here for practical reasons.</p>
+</dd>
+<dt><code>results</code></dt>
+<dd>
+<p>directory containing the workflow result files, organized in a
+sensible way. If it makes sense to order them based on execution order
+of the steps, this may be a good idea.</p>
+</dd>
+</dl>
+<h2 data-number="2.9" id="a-full-snakemake-pipeline"><span class="header-section-number">2.9</span> A full <code>Snakemake</code>
+pipeline</h2>
+<p>A complete <code>Snakemake</code> pipeline for the variant calling
+could look as follows:</p>
+<div class="sourceCode" id="cb13" data-language="snakemake"><pre class="sourceCode numberSource snakemake numberLines"><code class="sourceCode"><span id="cb13-1"><a href="#cb13-1"></a>import pandas as pd</span>
+<span id="cb13-2"><a href="#cb13-2"></a>import re</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a></span>
+<span id="cb13-5"><a href="#cb13-5"></a>configfile: &quot;config/config.yaml&quot;</span>
+<span id="cb13-6"><a href="#cb13-6"></a></span>
+<span id="cb13-7"><a href="#cb13-7"></a></span>
+<span id="cb13-8"><a href="#cb13-8"></a>sample_df = pd.read_csv(</span>
+<span id="cb13-9"><a href="#cb13-9"></a>    config[&quot;samples&quot;],</span>
+<span id="cb13-10"><a href="#cb13-10"></a>    sep=&quot;\t&quot;,</span>
+<span id="cb13-11"><a href="#cb13-11"></a>    dtype={&quot;sample_name&quot;: str, &quot;fastq&quot;: str}</span>
+<span id="cb13-12"><a href="#cb13-12"></a>).set_index(&quot;sample_name&quot;, drop=False)</span>
+<span id="cb13-13"><a href="#cb13-13"></a></span>
+<span id="cb13-14"><a href="#cb13-14"></a></span>
+<span id="cb13-15"><a href="#cb13-15"></a>rule all:</span>
+<span id="cb13-16"><a href="#cb13-16"></a>    input:</span>
+<span id="cb13-17"><a href="#cb13-17"></a>        expand(&quot;results/01_called_variants/{sample}.vcf&quot;,</span>
+<span id="cb13-18"><a href="#cb13-18"></a>                sample=sample_df.sample_name),</span>
+<span id="cb13-19"><a href="#cb13-19"></a></span>
+<span id="cb13-20"><a href="#cb13-20"></a></span>
+<span id="cb13-21"><a href="#cb13-21"></a>rule bowtie_index:</span>
+<span id="cb13-22"><a href="#cb13-22"></a>    input:</span>
+<span id="cb13-23"><a href="#cb13-23"></a>        genome=config[&quot;genome&quot;],</span>
+<span id="cb13-24"><a href="#cb13-24"></a>    output:</span>
+<span id="cb13-25"><a href="#cb13-25"></a>        multiext(</span>
+<span id="cb13-26"><a href="#cb13-26"></a>            config[&quot;genome&quot;],</span>
+<span id="cb13-27"><a href="#cb13-27"></a>            &quot;.1.bt2&quot;,</span>
+<span id="cb13-28"><a href="#cb13-28"></a>            &quot;.2.bt2&quot;,</span>
+<span id="cb13-29"><a href="#cb13-29"></a>            &quot;.3.bt2&quot;,</span>
+<span id="cb13-30"><a href="#cb13-30"></a>            &quot;.4.bt2&quot;,</span>
+<span id="cb13-31"><a href="#cb13-31"></a>            &quot;.rev.1.bt2&quot;,</span>
+<span id="cb13-32"><a href="#cb13-32"></a>            &quot;.rev.2.bt2&quot;,</span>
+<span id="cb13-33"><a href="#cb13-33"></a>        ),</span>
+<span id="cb13-34"><a href="#cb13-34"></a>    conda:</span>
+<span id="cb13-35"><a href="#cb13-35"></a>        &quot;envs/bowtie2.yaml&quot;</span>
+<span id="cb13-36"><a href="#cb13-36"></a>    log:</span>
+<span id="cb13-37"><a href="#cb13-37"></a>        &quot;logs/bowtie-index.err&quot;,</span>
+<span id="cb13-38"><a href="#cb13-38"></a>    shell:</span>
+<span id="cb13-39"><a href="#cb13-39"></a>        &quot;bowtie2-build {input.genome} {input.genome} 2&gt; {log} &quot;</span>
+<span id="cb13-40"><a href="#cb13-40"></a></span>
+<span id="cb13-41"><a href="#cb13-41"></a></span>
+<span id="cb13-42"><a href="#cb13-42"></a>rule map_reads:</span>
+<span id="cb13-43"><a href="#cb13-43"></a>    input:</span>
+<span id="cb13-44"><a href="#cb13-44"></a>        idx=rules.bowtie_index.output,</span>
+<span id="cb13-45"><a href="#cb13-45"></a>        reads=lambda wildcards: sample_df.loc[wildcards.sample,</span>
+<span id="cb13-46"><a href="#cb13-46"></a>              &quot;fastq&quot;],</span>
+<span id="cb13-47"><a href="#cb13-47"></a>    output:</span>
+<span id="cb13-48"><a href="#cb13-48"></a>        temp(&quot;results/00_mapped_reads/{sample}.unsorted.sam&quot;),</span>
+<span id="cb13-49"><a href="#cb13-49"></a>    params:</span>
+<span id="cb13-50"><a href="#cb13-50"></a>        idx=config[&quot;genome&quot;],</span>
+<span id="cb13-51"><a href="#cb13-51"></a>    conda:</span>
+<span id="cb13-52"><a href="#cb13-52"></a>        &quot;envs/bowtie2.yaml&quot;</span>
+<span id="cb13-53"><a href="#cb13-53"></a>    shell:</span>
+<span id="cb13-54"><a href="#cb13-54"></a>        &quot;bowtie2 -x {params.idx} &quot;</span>
+<span id="cb13-55"><a href="#cb13-55"></a>        &quot;-U {input.reads} &quot;</span>
+<span id="cb13-56"><a href="#cb13-56"></a>        &quot;-S {output} &quot;</span>
+<span id="cb13-57"><a href="#cb13-57"></a></span>
+<span id="cb13-58"><a href="#cb13-58"></a></span>
+<span id="cb13-59"><a href="#cb13-59"></a>rule sam_to_bam:</span>
+<span id="cb13-60"><a href="#cb13-60"></a>    input:</span>
+<span id="cb13-61"><a href="#cb13-61"></a>        rules.map_reads.output,</span>
+<span id="cb13-62"><a href="#cb13-62"></a>    output:</span>
+<span id="cb13-63"><a href="#cb13-63"></a>        &quot;results/00_mapped_reads/{sample}.bam&quot;,</span>
+<span id="cb13-64"><a href="#cb13-64"></a>    threads: 2</span>
+<span id="cb13-65"><a href="#cb13-65"></a>    conda:</span>
+<span id="cb13-66"><a href="#cb13-66"></a>        &quot;envs/htslib.yaml&quot;</span>
+<span id="cb13-67"><a href="#cb13-67"></a>    shell:</span>
+<span id="cb13-68"><a href="#cb13-68"></a>        &quot;samtools sort &quot;</span>
+<span id="cb13-69"><a href="#cb13-69"></a>        &quot;-@ {threads} &quot;</span>
+<span id="cb13-70"><a href="#cb13-70"></a>        &quot;-o {output} {input} &quot;</span>
+<span id="cb13-71"><a href="#cb13-71"></a></span>
+<span id="cb13-72"><a href="#cb13-72"></a></span>
+<span id="cb13-73"><a href="#cb13-73"></a>rule index_bam:</span>
+<span id="cb13-74"><a href="#cb13-74"></a>    input:</span>
+<span id="cb13-75"><a href="#cb13-75"></a>        rules.sam_to_bam.output,</span>
+<span id="cb13-76"><a href="#cb13-76"></a>    output:</span>
+<span id="cb13-77"><a href="#cb13-77"></a>        &quot;results/00_mapped_reads/{sample}.bam.bai&quot;,</span>
+<span id="cb13-78"><a href="#cb13-78"></a>    conda:</span>
+<span id="cb13-79"><a href="#cb13-79"></a>        &quot;envs/htslib.yaml&quot;</span>
+<span id="cb13-80"><a href="#cb13-80"></a>    shell:</span>
+<span id="cb13-81"><a href="#cb13-81"></a>        &quot;samtools index {input} &quot;</span>
+<span id="cb13-82"><a href="#cb13-82"></a></span>
+<span id="cb13-83"><a href="#cb13-83"></a></span>
+<span id="cb13-84"><a href="#cb13-84"></a>rule call_variants:</span>
+<span id="cb13-85"><a href="#cb13-85"></a>    input:</span>
+<span id="cb13-86"><a href="#cb13-86"></a>        rules.index_bam.output,</span>
+<span id="cb13-87"><a href="#cb13-87"></a>        aligned_reads=rules.sam_to_bam.output,</span>
+<span id="cb13-88"><a href="#cb13-88"></a>        genome=config[&quot;genome&quot;],</span>
+<span id="cb13-89"><a href="#cb13-89"></a>    output:</span>
+<span id="cb13-90"><a href="#cb13-90"></a>        &quot;results/01_called_variants/{sample}.vcf&quot;,</span>
+<span id="cb13-91"><a href="#cb13-91"></a>    conda:</span>
+<span id="cb13-92"><a href="#cb13-92"></a>        &quot;envs/htslib.yaml&quot;</span>
+<span id="cb13-93"><a href="#cb13-93"></a>    shell:</span>
+<span id="cb13-94"><a href="#cb13-94"></a>        &quot;bcftools mpileup -Ou &quot;</span>
+<span id="cb13-95"><a href="#cb13-95"></a>        &quot;-f {input.genome} &quot;</span>
+<span id="cb13-96"><a href="#cb13-96"></a>        &quot;{input.aligned_reads} &quot;</span>
+<span id="cb13-97"><a href="#cb13-97"></a>        &quot;| bcftools call -m -v &quot;</span>
+<span id="cb13-98"><a href="#cb13-98"></a>        &quot;&gt; {output} &quot;</span></code></pre></div>
+<p>If this is placed in a file called <code>Snakefile</code> within the
+directory structure proposed above, you should be able to run this using
+<code>snakemake -p --software-deployment-method conda -j2</code> from
+the parent directory.</p>
+<h2 data-number="2.10" id="exercises"><span class="header-section-number">2.10</span> Exercises</h2>
+<ol start="6" class="example" type="1">
+<li>What do the <code>-j</code> and <code>-p</code> options mean in the
+above command?</li>
+<li>Note that some of the rule properties and functions above have not
+been explained in the material. Which? Give a brief explanation of these
+and make sure you understand what these do.</li>
+<li>Get the above code up and running. Think about what the
+<code>config/config.yaml</code> file needs to contain. Note that you
+also need to set up the <code>yaml</code> files in the
+<code>workflow/envs</code> directory. Instructions for setting up
+environment files are available at <a href="https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#integrated-package-management" class="uri">https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#integrated-package-management</a>.
+Let the <code>htslib.yaml</code> file contain version <code>1.11</code>
+of both <code>samtools</code> and <code>bcftools</code>. Note that both
+the <code>conda-forge</code> and <code>bioconda</code> channels are
+necessary to include in the environment file. The
+<code>envs/bowtie2.yaml</code> file should look as follows:</li>
+</ol>
+<div class="sourceCode" id="cb14" data-language="yaml"><pre class="sourceCode numberSource yaml numberLines"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">channels</span><span class="kw">:</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="at">    </span><span class="kw">-</span><span class="at"> conda-forge</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="at">    </span><span class="kw">-</span><span class="at"> bioconda</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="at">    </span><span class="kw">-</span><span class="at"> bowtie2=2.4.2</span></span></code></pre></div>
+<ol start="9" class="example" type="1">
+<li>Use the workflow to rerun the variant calling. Use
+e.g. <code>diff</code> to ensure that the resulting <code>vcf</code>
+file looks similar to the one you generated in the variant calling
+exercise.</li>
+<li>Copy the read data into a new file, and use the workflow to call
+variants on this file as well. Once you’ve ensured this works, package
+the files necessary to run this into a neat zip file, ensuring that the
+directory structure is kept. Only include the necessary files.</li>
+</ol>
+<p>The following exercise is <strong>optional but highly
+recommended</strong>. It may contribute to a higher grade. Keep in mind
+that absolute paths only work on the system they are set up on – this is
+terrible for reproducibility, so make sure to avoid this in your
+hand-in.</p>
+<ol start="11" class="example" type="1">
+<li>Add rules for running <code>fastqc</code> and <code>fastp</code> (<a href="https://github.com/OpenGene/fastp" class="uri">https://github.com/OpenGene/fastp</a>). Ensure that the
+<code>fastqc</code> step is run for reads both before and after
+trimming, and that this is done by default when running the workflow.
+The trimming step can be done using the default <code>fastp</code>
+settings, but make sure that reads are trimmed prior to mapping. Using
+the <code>Snakemake</code> wrappers repository (<a href="https://snakemake-wrappers.readthedocs.io" class="uri">https://snakemake-wrappers.readthedocs.io</a>) to create
+these rules is optional but will make your life easier.</li>
+</ol>
+<p>The following exercises are <strong>optional</strong>. Read them
+through and pick the ones you find interesting.</p>
+<ol start="12" class="example" type="1">
+<li>The current version of the workflow only allows for a single
+reference genome, specified in the config file, to be used. Set up the
+workflow to allow for aligning to different reference genomes, i.e. a
+single run of the workflow should be able to align to separate
+references. How do you handle the directory structure?</li>
+<li>Write a new rule using the <code>run</code> or <code>script</code>
+property together with <code>pandas</code> or <code>R</code> to save the
+number of variants per scaffold to a <code>tsv</code> file. Beware that
+handling <code>R</code> dependencies in <code>conda</code> is not
+entirely straight forward.</li>
+<li>Write a workflow similar to the one above, but based on the gene
+annotation exercise. Ideally, the pipeline should specify the necessary
+reference databases in the config file. The final output should be the
+list of genes having hits from both <code>blast</code> and
+<code>pfam</code>, and you should be able to specify several samples for
+analysis in an appropriate <code>tsv</code> file.</li>
+</ol>
+</body>
+</html>
