@@ -1,8 +1,2 @@
 sample_name,fastq
-sample_1,yeastGenome.fa.1.bt2
-sample_2,yeastGenome.fa.2.bt2
-sample_3,yeastGenome.fa.3.bt2
-sample_4,yeastGenome.fa.4.bt2
-sample_5,yeastGenome.fa.fai
-sample_6,yeastGenome.fa.rev.1.bt2
-sample_7,yeastGenome.fa.rev.2.bt2
+sample_1,resources/yeastReads.fastq
