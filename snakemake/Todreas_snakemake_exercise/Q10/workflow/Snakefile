@@ -7,7 +7,6 @@ configfile: "config/config.yaml"
 
 sample_df = pd.read_csv(
     config["samples"],
-    sep="\t",
     dtype={"sample_name": str, "fastq": str}
 ).set_index("sample_name", drop=False)
 
