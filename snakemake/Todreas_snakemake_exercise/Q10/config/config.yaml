@@ -1,2 +1,2 @@
-samples: 'config/samples.csv'
+samples: 'config/samples.tsv'
 genome: 'resources/genome/yeastGenome.fa'

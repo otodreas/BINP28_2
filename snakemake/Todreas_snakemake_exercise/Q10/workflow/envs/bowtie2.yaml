@@ -2,4 +2,5 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  -bowtie2=2.4.2
+  # This was the lowest version of bowtie2 that worked
+  - bowtie2=2.5.4

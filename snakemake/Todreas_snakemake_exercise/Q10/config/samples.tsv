@@ -1,10 +1,2 @@
-sample_name fastq
-sample_1    resources/yeastReads.fastq
-sample_2    resources/genome/yeastGenome.fa
-sample_3    resources/genome/yeastGenome.fa.1.bt2
-sample_4    resources/genome/yeastGenome.fa.2.bt2
-sample_5    resources/genome/yeastGenome.fa.3.bt2
-sample_6    resources/genome/yeastGenome.fa.4.bt2
-sample_7    resources/genome/yeastGenome.fa.fai
-sample_8    resources/genome/yeastGenome.fa.rev.1.bt2
-sample_9    resources/genome/yeastGenome.fa.rev.2.bt2
+sample_name	fastq
+sample_1	resources/yeastReads.fastq

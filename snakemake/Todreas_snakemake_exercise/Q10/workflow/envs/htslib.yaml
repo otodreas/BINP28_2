@@ -2,5 +2,6 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - samtools=1.11
-  - bcftools=1.11
+  # This was the lowest version that worked that was the same for both tools
+  - samtools=1.20
+  - bcftools=1.20
