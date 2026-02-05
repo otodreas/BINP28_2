@@ -221,3 +221,5 @@ blast/BlastParser/yeast_vs_Paxillus.blastp
 /snakemake/Todreas_snakemake_exercise/Q10/resources
 /snakemake/Todreas_snakemake_exercise/Q10/.snakemake
 /snakemake/Todreas_snakemake_exercise/Q10/logs
+amplicon/AmpliconData.tar.gz
+amplicon/AmpliconData
