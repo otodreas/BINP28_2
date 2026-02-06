@@ -1,0 +1,1 @@
+`FastQC` and `Trimmomatic` were already installed and run from `inf-33-2025@bioinf-serv2.cob.lu.se:/home/inf-33-2025/Tools/installs/FastQC/` and `.../Trimmomatic-0.40/`. `pandaseq` was installed into the conda environment `inf-33-2025@bioinf-serv2.cob.lu.se:/home/inf-33-2025/miniconda3/envs/binp28_amplicon`.

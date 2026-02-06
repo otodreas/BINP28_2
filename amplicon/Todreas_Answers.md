@@ -10,3 +10,7 @@
 5. The location specified by the coordinates are in **Kyrgyzstan**.
 6. In this study, we want exactly two reads per individual. To ensure this is the case, we can
     - Check that each directory contains two `fastq` files where the first line of each `fastq` file is identical except for the number following the space: for one file, the character should be `1`, and the other, the character should be `2`. Only use the directories whose content match these conditions.
+7. There are **7,856,118 sequences** across the `fastq` files.
+8. There are an average of **227.5 bases per read** across the `fastq` files.
+9. The `- - - -` in `paste` is **merging four lines into one** from the input files into a single line, returning a matrix of sorts, with four columns and the cumulative number of rows of all files being searched with `grep` divided by four.
+10. The second line is cutting out all columns but the second (corresponding with the sequences) and then performing a Perl-compatible regular expression `grep`, where each line must start with `TTAGA`, be followed by a `C` or `G`, and then be followed by `AC`.
