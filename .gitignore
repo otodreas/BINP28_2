@@ -226,4 +226,5 @@ amplicon/AmpliconData
 /amplicon/Fastq
 /amplicon/XML
 /amplicon/Colonies
-/amplicon/2_trimming
+/amplicon/2_trimming/*.fastq
+/amplicon/2_trimming/*.log
