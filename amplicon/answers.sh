@@ -36,6 +36,6 @@
 # done
 
 # Get percent discarded reads
-for file in 2_trimming/*fastq; do
-    echo $file
+for file in 2_trimming/*U.fastq; do
+    echo $file | sed s/.fastq//
 done
