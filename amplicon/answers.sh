@@ -35,22 +35,35 @@
 #     LEADING:20 TRAILING:20 SLIDINGWINDOW:8:15 MINLEN:140 AVGQUAL:20
 # done > 2_trimming/trimmomatic_all.log 2>&1
 
-# # Get percent discarded reads
-# for file in 2_trimming/*U.fastq; do
-#     echo $file | sed s/.fastq//
+# # Question 14
+# # Get a rough idea of how many sequences were dropped during trimming
+# grep 'Dropped: ' 2_trimming/trimmomatic_all.log | \
+# awk -F'Dropped: ' '{ print $2 }'
+
+# # Question 15
+# # Run FastQC on all `fastq` files
+# for file in 2_trimming/*.fastq; do
+#     fastqc "$file" -o 2_trimming/fastqc_trimmed/
 # done
 
-# Question 15
-# Run FastQC on all `fastq` files
-for file in 2_trimming/*.fastq; do
-    fastqc "$file" -o 3_fastqc_trimmed/
-done
+# # Open fastqc reports (use zsh locally)
+# open \
+# 1_fastqc/CT_A_1_fastqc.html \
+# 2_trimming/fastqc_trimmed/CT_A_1P_fastqc.html \
+# 1_fastqc/CT_C_2_fastqc.html \
+# 2_trimming/fastqc_trimmed/CT_C_2P_fastqc.html \
+# 1_fastqc/MA_A_2_fastqc.html \
+# 2_trimming/fastqc_trimmed/MA_A_2U_fastqc.html
 
-# Open fastqc reports (use zsh locally)
-open \
-1_fastqc/CT_A_1_fastqc.html \
-3_fastqc_trimmed/CT_A_1P_fastqc.html \
-1_fastqc/CT_C_2_fastqc.html \
-3_fastqc_trimmed/CT_C_2P_fastqc.html \
-1_fastqc/MA_A_2_fastqc.html \
-3_fastqc_trimmed/MA_A_2U_fastqc.html
+# Run pandaseq
+for file in 2_trimming/*P.fastq; do
+    id=$($file | cut -d'/' -f2 | cut -d'_' -f1-2)
+    echo $id
+    # pandaseq \
+    # -f 2_trimming/CT_A_1P.fastq \
+    # -r 2_trimming/CT_A_2P.fastq \
+    # -g 3_mergereads/CT_A.log \
+    # -u 3_mergereads/CT_A.unaligned.fasta \
+    # -w 3_mergereads/CT_A.fastq \
+    # -F
+done
