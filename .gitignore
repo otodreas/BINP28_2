@@ -56,7 +56,7 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
+# *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -226,3 +226,4 @@ amplicon/AmpliconData
 /amplicon/Fastq
 /amplicon/XML
 /amplicon/Colonies
+/amplicon/2_trimming
