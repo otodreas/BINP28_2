@@ -33,9 +33,24 @@
 #     ${line}_1.fastq \
 #     ${line}_2.fastq \
 #     LEADING:20 TRAILING:20 SLIDINGWINDOW:8:15 MINLEN:140 AVGQUAL:20
+# done > 2_trimming/trimmomatic_all.log 2>&1
+
+# # Get percent discarded reads
+# for file in 2_trimming/*U.fastq; do
+#     echo $file | sed s/.fastq//
 # done
 
-# Get percent discarded reads
-for file in 2_trimming/*U.fastq; do
-    echo $file | sed s/.fastq//
+# Question 15
+# Run FastQC on all `fastq` files
+for file in 2_trimming/*.fastq; do
+    fastqc "$file" -o 3_fastqc_trimmed/
 done
+
+# Open fastqc reports (use zsh locally)
+open \
+1_fastqc/CT_A_1_fastqc.html \
+3_fastqc_trimmed/CT_A_1P_fastqc.html \
+1_fastqc/CT_C_2_fastqc.html \
+3_fastqc_trimmed/CT_C_2P_fastqc.html \
+1_fastqc/MA_A_2_fastqc.html \
+3_fastqc_trimmed/MA_A_2U_fastqc.html
