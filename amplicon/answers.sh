@@ -190,6 +190,20 @@
 # --chimeras 5_chimera/all.denovo.chimeras.fasta \
 # --uchimeout 5_chimera/all.denovo.uchime
 
-# Question 32
-# Calculate percentage of reads classified as chimeric
-cut -f 18 5_chimera/all.denovo.uchime | sort | uniq -c | awk '/Y/ {y=$1} /N/ {n=$1} END {print y/(n+y)*100}'
+# # Question 32
+# # Calculate percentage of reads classified as chimeric
+# cut -f 18 5_chimera/all.denovo.uchime | \
+# sort | \
+# uniq -c | \
+# awk '/Y/ {y=$1} /N/ {n=$1} END {print y/(n+y)*100}'
+
+# # Unzip db
+# unzip -p db/silva.gold.bacteria.zip | \
+# sed -e "s/[.-]//g" > db/gold.fasta
+
+# Question 33
+# Check how many sequences the database contains and the average sequence length
+nlines=$(grep -cv '^>' db/gold.fasta)
+nchars=$(grep -v '^>' db/gold.fasta | tr -d '\n' | wc -c)
+echo $nlines
+echo "$nchars / $nlines" | bc
