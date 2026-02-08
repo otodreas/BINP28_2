@@ -110,8 +110,18 @@
 # done
 
 # # Question 22
-# # Check the number of reads in the resulting file
+# # Check the number of unique reads in the resulting file
 # grep -cv '^>' 4_precluster/all_combined.fasta
+
+# # Check total number of reads
+# grep '^>' 4_precluster/all_combined.fasta | \
+# cut -d'=' -f 2 | \
+# awk '{sum += $1} END {print sum}'
+
+# # Compare to number of total reads in the fastq files
+# for file in 3_mergereads/*.fastq; do
+#     cat $file | paste - - - - | cut -f -2 | wc -l
+# done | awk '{sum += $1} END {print sum}'
 
 # # Dereplicate pooled reads file
 # ~/Tools/installs/vsearch/bin/vsearch \
@@ -126,5 +136,34 @@
 # # Check how many times the most frequent read appears
 # head -n 1 4_precluster/all_derep.fasta | cut -d'=' -f 2
 
-# Question 25
-# Calculate the number of reads from each sample
+# # Question 25
+# # Calculate the number of reads from each sample
+# # Get IDs
+# grep '^>' 4_precluster/all_derep.fasta | \
+# cut -d'>' -f 2 | \
+# sed 's/[0-9].*//' | \
+# sort | \
+# uniq | \
+# # Calculate number of reads per sample
+# while read line; do
+#     # echo $line
+#     grep $line 4_precluster/all_derep.fasta | \
+#     cut -d'=' -f 2 | \
+#     awk '{sum += $1} END {print sum}'
+# done # | awk '{sum += $1} END {print sum}'
+
+# # Check that we still have the same number of total reads
+# grep '^>' 4_precluster/all_derep.fasta | \
+# cut -d'=' -f 2 | \
+# awk '{sum += $1} END {print sum}'
+
+# Precluster
+~/Tools/installs/vsearch/bin/vsearch \
+--cluster_size 4_precluster/all_derep.fasta \
+--id 0.97 \
+--strand plus \
+--sizein \
+--sizeout \
+--fasta_width 0 \
+--uc 4_precluster/all_preclust.uc \
+--centroids 4_precluster/all_preclust.fasta
