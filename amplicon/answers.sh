@@ -157,13 +157,35 @@
 # cut -d'=' -f 2 | \
 # awk '{sum += $1} END {print sum}'
 
-# Precluster
+# # Precluster
+# ~/Tools/installs/vsearch/bin/vsearch \
+# --cluster_size 4_precluster/all_derep.fasta \
+# --id 0.97 \
+# --strand plus \
+# --sizein \
+# --sizeout \
+# --fasta_width 0 \
+# --uc 4_precluster/all_preclust.uc \
+# --centroids 4_precluster/all_preclust.fasta
+
+# # Question 27
+# # Get number of fasta entries after preclustering
+# grep -vc '^>' 4_precluster/all_preclust.fasta
+
+# # Get number of different record types in the first column
+# cat 4_precluster/all_preclust.uc | cut -f 1 | sort | uniq -c
+
+# # Question 28
+# # Get the number of centroids in the file
+# grep -c '^C' 4_precluster/all_preclust.uc
+
+# De novo chimera checking
 ~/Tools/installs/vsearch/bin/vsearch \
---cluster_size 4_precluster/all_derep.fasta \
---id 0.97 \
---strand plus \
+--uchime3_denovo 4_precluster/all_preclust.fasta \
+--threads 8 \
 --sizein \
 --sizeout \
 --fasta_width 0 \
---uc 4_precluster/all_preclust.uc \
---centroids 4_precluster/all_preclust.fasta
+--nonchimeras 5_chimera/all.denovo.nonchimeras.fasta \
+--chimeras 5_chimera/all.denovo.chimeras.fasta \
+--uchimeout 5_chimera/all.denovo.uchime
