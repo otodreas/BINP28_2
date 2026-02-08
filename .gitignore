@@ -229,3 +229,4 @@ amplicon/AmpliconData
 /amplicon/2_trimming/*.fastq
 /amplicon/2_trimming/*.log
 /amplicon/3_mergereads
+/amplicon/4_precluster
