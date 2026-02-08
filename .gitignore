@@ -228,3 +228,4 @@ amplicon/AmpliconData
 /amplicon/Colonies
 /amplicon/2_trimming/*.fastq
 /amplicon/2_trimming/*.log
+/amplicon/3_mergereads

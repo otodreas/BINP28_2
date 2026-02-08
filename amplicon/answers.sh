@@ -55,15 +55,31 @@
 # 1_fastqc/MA_A_2_fastqc.html \
 # 2_trimming/fastqc_trimmed/MA_A_2U_fastqc.html
 
-# Run pandaseq
-for file in 2_trimming/*P.fastq; do
-    id=$($file | cut -d'/' -f2 | cut -d'_' -f1-2)
-    echo $id
-    # pandaseq \
-    # -f 2_trimming/CT_A_1P.fastq \
-    # -r 2_trimming/CT_A_2P.fastq \
-    # -g 3_mergereads/CT_A.log \
-    # -u 3_mergereads/CT_A.unaligned.fasta \
-    # -w 3_mergereads/CT_A.fastq \
-    # -F
+# # Run pandaseq
+# for file in 2_trimming/*P.fastq; do
+#     id=$(echo "$file" | cut -d'/' -f2 | cut -d'_' -f1-2)
+#     pandaseq \
+#     -f 2_trimming/${id}_1P.fastq \
+#     -r 2_trimming/${id}_2P.fastq \
+#     -g 3_mergereads/${id}.log \
+#     -u 3_mergereads/${id}.unaligned.fasta \
+#     -w 3_mergereads/${id}.fastq \
+#     -F
+# done
+
+# Question 17
+# Compute average length of merged sequences
+SEQS_TOT=0
+BASES=0
+for file in 3_mergereads/*.fastq; do
+    SEQS=$(grep -c '^@' "$file")
+    BASES=$(
+        grep -A 1 --no-group-separator '^@' "$file" | \
+        grep -v '^@' | \
+        tr -d '\n' | \
+        wc -c
+    )
+    ((SEQS_TOT += SEQS))
+    ((BASES_TOT += BASES))
 done
+echo "scale=3; $BASES_TOT / $SEQS_TOT" | bc
