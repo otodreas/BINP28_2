@@ -179,13 +179,17 @@
 # # Get the number of centroids in the file
 # grep -c '^C' 4_precluster/all_preclust.uc
 
-# De novo chimera checking
-~/Tools/installs/vsearch/bin/vsearch \
---uchime3_denovo 4_precluster/all_preclust.fasta \
---threads 8 \
---sizein \
---sizeout \
---fasta_width 0 \
---nonchimeras 5_chimera/all.denovo.nonchimeras.fasta \
---chimeras 5_chimera/all.denovo.chimeras.fasta \
---uchimeout 5_chimera/all.denovo.uchime
+# # De novo chimera checking
+# ~/Tools/installs/vsearch/bin/vsearch \
+# --uchime3_denovo 4_precluster/all_preclust.fasta \
+# --threads 8 \
+# --sizein \
+# --sizeout \
+# --fasta_width 0 \
+# --nonchimeras 5_chimera/all.denovo.nonchimeras.fasta \
+# --chimeras 5_chimera/all.denovo.chimeras.fasta \
+# --uchimeout 5_chimera/all.denovo.uchime
+
+# Question 32
+# Calculate percentage of reads classified as chimeric
+cut -f 18 5_chimera/all.denovo.uchime | sort | uniq -c | awk '/Y/ {y=$1} /N/ {n=$1} END {print y/(n+y)*100}'
