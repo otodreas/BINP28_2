@@ -67,19 +67,64 @@
 #     -F
 # done
 
-# Question 17
-# Compute average length of merged sequences
-SEQS_TOT=0
-BASES=0
-for file in 3_mergereads/*.fastq; do
-    SEQS=$(grep -c '^@' "$file")
-    BASES=$(
-        grep -A 1 --no-group-separator '^@' "$file" | \
-        grep -v '^@' | \
-        tr -d '\n' | \
-        wc -c
-    )
-    ((SEQS_TOT += SEQS))
-    ((BASES_TOT += BASES))
-done
-echo "scale=3; $BASES_TOT / $SEQS_TOT" | bc
+# # Question 17
+# # Compute average length of merged sequences
+# SEQS_TOT=0
+# BASES=0
+# for file in 3_mergereads/*.fastq; do
+#     SEQS=$(grep -c '^@' "$file")
+#     BASES=$(
+#         grep -A 1 --no-group-separator '^@' "$file" | \
+#         grep -v '^@' | \
+#         tr -d '\n' | \
+#         wc -c
+#     )
+#     ((SEQS_TOT += SEQS))
+#     ((BASES_TOT += BASES))
+# done
+# echo "scale=3; $BASES_TOT / $SEQS_TOT" | bc
+
+# # Initial dereplication for all files
+# for file in 3_mergereads/*fastq; do
+#     id=$(echo "$file" | cut -d'/' -f 2 | cut -d'.' -f 1)
+#     ~/Tools/installs/vsearch/bin/vsearch \
+#     --fastx_uniques $file \
+#     --strand plus \
+#     --sizeout \
+#     --relabel $id \
+#     --fasta_width 0 \
+#     --fastaout 4_precluster/${id}.derep.fasta
+# done
+
+# # Compare number of reads in input vs output file
+# # Number of reads in input
+# cat 3_mergereads/CT_A.fastq | paste - - - - | cut -f 2 | wc -l
+# # Number of reads in output
+# grep "^>" 4_precluster/CT_A.derep.fasta | \
+# sed 's/.*size=\([0-9]*\).*/\1/' | \
+# awk '{sum+=$1} END {print sum}'
+
+# # Pool reads
+# for file in 4_precluster/*; do
+#     cat "$file" >>4_precluster/all_combined.fasta
+# done
+
+# # Question 22
+# # Check the number of reads in the resulting file
+# grep -cv '^>' 4_precluster/all_combined.fasta
+
+# # Dereplicate pooled reads file
+# ~/Tools/installs/vsearch/bin/vsearch \
+# --derep_fulllength 4_precluster/all_combined.fasta \
+# --sizein \
+# --sizeout \
+# --fasta_width 0 \
+# --uc 4_precluster/all_derep.uc \
+# --output 4_precluster/all_derep.fasta
+
+# # Question 24
+# # Check how many times the most frequent read appears
+# head -n 1 4_precluster/all_derep.fasta | cut -d'=' -f 2
+
+# Question 25
+# Calculate the number of reads from each sample
