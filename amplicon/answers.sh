@@ -201,9 +201,20 @@
 # unzip -p db/silva.gold.bacteria.zip | \
 # sed -e "s/[.-]//g" > db/gold.fasta
 
-# Question 33
-# Check how many sequences the database contains and the average sequence length
-nlines=$(grep -cv '^>' db/gold.fasta)
-nchars=$(grep -v '^>' db/gold.fasta | tr -d '\n' | wc -c)
-echo $nlines
-echo "$nchars / $nlines" | bc
+# # Question 33
+# # Check how many sequences the database contains and the average sequence length
+# nlines=$(grep -cv '^>' db/gold.fasta)
+# nchars=$(grep -v '^>' db/gold.fasta | tr -d '\n' | wc -c)
+# echo $nlines
+# echo "$nchars / $nlines" | bc
+
+# # Reference-based chimera checking
+# ~/Tools/installs/vsearch/bin/vsearch \
+# --uchime_ref 5_chimera/all.denovo.nonchimeras.fasta \
+# --db db/gold.fasta \
+# --sizein \
+# --sizeout \
+# --fasta_width 0 \
+# --nonchimeras 5_chimera/all.ref.nonchimeras.fasta \
+# --chimeras 5_chimera/all.ref.chimeras.fasta \
+# --uchimeout 5_chimera/all.ref.uchime

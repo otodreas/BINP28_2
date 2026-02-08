@@ -232,4 +232,3 @@ amplicon/AmpliconData
 /amplicon/4_precluster/*
 !/amplicon/4_precluster/all_preclust.fasta
 !/amplicon/4_precluster/all_preclust.uc
-/amplicon/db/silva.gold.align
