@@ -218,3 +218,10 @@
 # --nonchimeras 5_chimera/all.ref.nonchimeras.fasta \
 # --chimeras 5_chimera/all.ref.chimeras.fasta \
 # --uchimeout 5_chimera/all.ref.uchime
+
+# Question 35
+# # Calculate percentage of discarded reads during reference checking
+cut -f 18 5_chimera/all.ref.uchime | \
+sort | \
+uniq -c | \
+awk '/Y/ {y=$1} /N/ {n=$1} END {print y/(n+y)*100}'
