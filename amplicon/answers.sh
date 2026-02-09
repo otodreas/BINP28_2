@@ -231,8 +231,76 @@
 # all_preclust.uc: information about the clustering step
 # all.ref.nonchimeras.fasta: preclusters classified
 # as non chimeric
-~/Tools/installs/map.pl \
+./map.pl \
 4_precluster/all_derep.fasta \
 4_precluster/all_preclust.uc \
 5_chimera/all.ref.nonchimeras.fasta > \
 6_clustering/all.nonchimeras.derep.fasta
+
+# Next, we extract all non-chimeric reads
+# all_combined.fasta: the starting set of reads
+# all_derep.uc: information about the dereplication step
+# all.nonchimeras.derep.fasta: dereplicated sequences
+# classified as non-chimeric (from previous step)
+./map.pl \
+4_precluster/all_combined.fasta \
+4_precluster/all_derep.uc \
+6_clustering/all.nonchimeras.derep.fasta > \
+6_clustering/all.nonchimeras.fasta
+
+# Question 39
+# Calculate number of non-chomeric preclusters
+grep -cv '^>' 6_clustering/all.nonchimeras.fasta
+# Calculate number of dereplicated reads
+grep '^>' 6_clustering/all.nonchimeras.derep.fasta | \
+cut -d'=' -f 2 | \
+awk '{sum += $1} END {print sum}'
+# Calculate number of raw reads
+grep '^>' 6_clustering/all.nonchimeras.fasta | \
+cut -d'=' -f 2 | \
+awk '{sum += $1} END {print sum}'
+
+# Rename fasta headers
+sed "s/[0-9]\+;/;/" 6_clustering/all.nonchimeras.fasta > \
+6_clustering/all.nonchimeras.renamed.fasta
+
+# Cluster
+~/Tools/installs/vsearch/bin/vsearch \
+--cluster_size 6_clustering/all.nonchimeras.renamed.fasta \
+--threads 8 \
+--id 0.97 \
+--strand plus \
+--sizein \
+--sizeout \
+--fasta_width 0 \
+--relabel OTU_ \
+--mintsize 3 \
+--uc 6_clustering/final.uchime \
+--centroids 6_clustering/otus.fasta \
+--otutabout 6_clustering/otus.tsv
+
+# # Count the total number of OTUs
+# grep -c '^>' 6_clustering/otus.fasta
+# # Count the number of sequences they represent
+# grep '^>' 6_clustering/otus.fasta | \     
+# cut -d'=' -f 2 | \
+# awk '{sum += $1} END {print sum}'
+
+# # Question 43
+# # Count OTUs per colony
+# for col in {2..8}; do
+#     head -n 1 6_clustering/otus.tsv | cut -f $col
+#     tail -n +2 6_clustering/otus.tsv | \
+#     cut -f $col | \
+#     awk '{sum += $1} END {print sum}'
+# done # | awk '{sum += $1} END {print sum}'
+
+# # Question 44
+# # Count mean number of sequences per OTUs per colony
+# for col in {2..8}; do
+#     head -n 1 6_clustering/otus.tsv | cut -f $col
+#     tail -n +2 6_clustering/otus.tsv | \
+#     cut -f $col | \
+#     awk '{sum += $1; count++} END {print sum/count}'
+# done
+
