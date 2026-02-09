@@ -304,13 +304,37 @@
 #     awk '{sum += $1; count++} END {print sum/count}'
 # done
 
-# Run rdp classifier
-java -Xmx1g -jar ~/Tools/installs/rdp_classifier_2.14/dist/classifier.jar \
--c 0.8 \
--f fixrank \
--o 7_classify/all.fixedRank \
--h 7_classify/all.significant \
-6_clustering/otus.fasta
+# # Run rdp classifier
+# java -Xmx1g -jar ~/Tools/installs/rdp_classifier_2.14/dist/classifier.jar \
+# -c 0.8 \
+# -f fixrank \
+# -o 7_classify/all.fixedRank \
+# -h 7_classify/all.significant \
+# 6_clustering/otus.fasta
 
-# Question 48
-# Check how many sequences were not classified as bacteria
+# # Question 48
+# # Check how many sequences were not classified as bacteria
+# cat 7_classify/all.fixedRank | \
+# cut -f 3 | \
+# sort | \
+# uniq -c | \
+# grep -v 'Bacteria' | \
+# awk '{sum += $1} END {print sum}'
+
+# # Check how many OTUs could be determined on the phylym level (at or above 0.8 confidence)
+# cat 7_classify/all.fixedRank | \
+# cut -f 8 | \
+# sort -r | \
+# uniq -c | \
+# awk '$2 >= 0.8' | \
+# awk '{ sum += $1 }; END { print sum }'
+
+# Question 49
+# Check how many OTUs could be determined on the genus level (at or above 0.8 confidence)
+cat 7_classify/all.fixedRank | \
+cut -f 20 | \
+sort -r | \
+uniq -c | \
+awk '$2 >= 0.8' | \
+awk '{ sum += $1 }; END { print sum }'
+
