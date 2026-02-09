@@ -312,3 +312,5 @@ java -Xmx1g -jar ~/Tools/installs/rdp_classifier_2.14/dist/classifier.jar \
 -h 7_classify/all.significant \
 6_clustering/otus.fasta
 
+# Question 48
+# Check how many sequences were not classified as bacteria
