@@ -219,9 +219,20 @@
 # --chimeras 5_chimera/all.ref.chimeras.fasta \
 # --uchimeout 5_chimera/all.ref.uchime
 
-# Question 35
-# # Calculate percentage of discarded reads during reference checking
-cut -f 18 5_chimera/all.ref.uchime | \
-sort | \
-uniq -c | \
-awk '/Y/ {y=$1} /N/ {n=$1} END {print y/(n+y)*100}'
+# # Question 35
+# # # Calculate percentage of discarded reads during reference checking
+# cut -f 18 5_chimera/all.ref.uchime | \
+# sort | \
+# uniq -c | \
+# awk '/Y/ {y=$1} /N/ {n=$1} END {print y/(n+y)*100}'
+
+# Extract all reads belonging to non-chimeric preclusters
+# all_derep.fasta: all reads dereplicated across colonies
+# all_preclust.uc: information about the clustering step
+# all.ref.nonchimeras.fasta: preclusters classified
+# as non chimeric
+~/Tools/installs/map.pl \
+4_precluster/all_derep.fasta \
+4_precluster/all_preclust.uc \
+5_chimera/all.ref.nonchimeras.fasta > \
+6_clustering/all.nonchimeras.derep.fasta
