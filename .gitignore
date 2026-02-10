@@ -233,3 +233,4 @@ amplicon/AmpliconData
 !/amplicon/4_precluster/all_preclust.fasta
 !/amplicon/4_precluster/all_preclust.uc
 amplicon/6_clustering/*
+!/amplicon/6_clustering/otus.tsv
